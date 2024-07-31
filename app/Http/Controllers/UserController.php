@@ -32,21 +32,21 @@ class UserController extends Controller
         return response()->json($user, 201);
     }
 
-    public function show($id)
+    public function show($id_user)
     {
-        return User::findOrFail($id);
+        return User::findOrFail($id_user);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id_user)
     {
         $request->validate([
             'username' => 'string|max:50',
-            'email' => 'string|email|max:50|unique:users,email,' . $id,
+            'email' => 'string|email|max:50|unique:users,email,' . $id_user . ',id_user',
             'password' => 'string|min:6',
             'id_role' => 'exists:roles,id_role'
         ]);
 
-        $user = User::findOrFail($id);
+        $user = User::findOrFail($id_user);
 
         if ($request->has('username')) {
             $user->username = $request->username;
@@ -66,9 +66,9 @@ class UserController extends Controller
         return response()->json($user, 200);
     }
 
-    public function destroy($id)
+    public function destroy($id_user)
     {
-        User::findOrFail($id)->delete();
+        User::findOrFail($id_user)->delete();
 
         return response()->json(null, 204);
     }
