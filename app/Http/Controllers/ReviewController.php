@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Review;
+use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
@@ -18,8 +19,7 @@ class ReviewController extends Controller
             'rating' => 'required|integer|min:1|max:5',
             'review_content' => 'required|string',
             'review_date' => 'required|date',
-            'id_event' => 'required|exists:events,id_event',
-            'id_user' => 'required|exists:users,id_user'
+            'id_event' => 'required|exists:events,id_event'
         ]);
 
         $review = Review::create([
@@ -27,7 +27,7 @@ class ReviewController extends Controller
             'review_content' => $request->review_content,
             'review_date' => $request->review_date,
             'id_event' => $request->id_event,
-            'id_user' => $request->id_user
+            'id_user' => Auth::id()
         ]);
 
         return response()->json($review, 201);
@@ -44,11 +44,15 @@ class ReviewController extends Controller
             'rating' => 'integer|min:1|max:5',
             'review_content' => 'string',
             'review_date' => 'date',
-            'id_event' => 'exists:events,id_event',
-            'id_user' => 'exists:users,id_user'
+            'id_event' => 'exists:events,id_event'
         ]);
 
         $review = Review::findOrFail($id);
+
+
+        if ($review->id_user != Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
 
         if ($request->has('rating')) {
             $review->rating = $request->rating;
@@ -62,9 +66,6 @@ class ReviewController extends Controller
         if ($request->has('id_event')) {
             $review->id_event = $request->id_event;
         }
-        if ($request->has('id_user')) {
-            $review->id_user = $request->id_user;
-        }
 
         $review->save();
 
@@ -73,7 +74,13 @@ class ReviewController extends Controller
 
     public function destroy($id)
     {
-        Review::findOrFail($id)->delete();
+        $review = Review::findOrFail($id);
+
+        if ($review->id_user != Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $review->delete();
 
         return response()->json(null, 204);
     }

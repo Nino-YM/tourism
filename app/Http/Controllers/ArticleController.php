@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Article;
+use Illuminate\Support\Facades\Auth;
 
 class ArticleController extends Controller
 {
@@ -18,14 +19,13 @@ class ArticleController extends Controller
             'article_name' => 'required|string|max:50',
             'article_content' => 'required|string',
             'published_date' => 'required|date',
-            'id_user' => 'required|exists:users,id_user'
         ]);
 
         $article = Article::create([
             'article_name' => $request->article_name,
             'article_content' => $request->article_content,
             'published_date' => $request->published_date,
-            'id_user' => $request->id_user
+            'id_user' => Auth::id()
         ]);
 
         return response()->json($article, 201);
@@ -41,11 +41,15 @@ class ArticleController extends Controller
         $request->validate([
             'article_name' => 'string|max:50',
             'article_content' => 'string',
-            'published_date' => 'date',
-            'id_user' => 'exists:users,id_user'
+            'published_date' => 'date'
         ]);
 
         $article = Article::findOrFail($id);
+
+
+        if ($article->id_user != Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
 
         if ($request->has('article_name')) {
             $article->article_name = $request->article_name;
@@ -56,9 +60,6 @@ class ArticleController extends Controller
         if ($request->has('published_date')) {
             $article->published_date = $request->published_date;
         }
-        if ($request->has('id_user')) {
-            $article->id_user = $request->id_user;
-        }
 
         $article->save();
 
@@ -67,7 +68,13 @@ class ArticleController extends Controller
 
     public function destroy($id)
     {
-        Article::findOrFail($id)->delete();
+        $article = Article::findOrFail($id);
+
+        if ($article->id_user != Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $article->delete();
 
         return response()->json(null, 204);
     }

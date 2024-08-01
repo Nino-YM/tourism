@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Comment;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
@@ -18,14 +19,13 @@ class CommentController extends Controller
             'comment_content' => 'required|string',
             'comment_date' => 'required|date',
             'id_article' => 'required|exists:articles,id_article',
-            'id_user' => 'required|exists:users,id_user'
         ]);
 
         $comment = Comment::create([
             'comment_content' => $request->comment_content,
             'comment_date' => $request->comment_date,
             'id_article' => $request->id_article,
-            'id_user' => $request->id_user
+            'id_user' => Auth::id()
         ]);
 
         return response()->json($comment, 201);
@@ -41,11 +41,14 @@ class CommentController extends Controller
         $request->validate([
             'comment_content' => 'string',
             'comment_date' => 'date',
-            'id_article' => 'exists:articles,id_article',
-            'id_user' => 'exists:users,id_user'
+            'id_article' => 'exists:articles,id_article'
         ]);
 
         $comment = Comment::findOrFail($id);
+
+        if ($comment->id_user != Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
 
         if ($request->has('comment_content')) {
             $comment->comment_content = $request->comment_content;
@@ -56,9 +59,6 @@ class CommentController extends Controller
         if ($request->has('id_article')) {
             $comment->id_article = $request->id_article;
         }
-        if ($request->has('id_user')) {
-            $comment->id_user = $request->id_user;
-        }
 
         $comment->save();
 
@@ -67,7 +67,13 @@ class CommentController extends Controller
 
     public function destroy($id)
     {
-        Comment::findOrFail($id)->delete();
+        $comment = Comment::findOrFail($id);
+
+        if ($comment->id_user != Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $comment->delete();
 
         return response()->json(null, 204);
     }
