@@ -4,13 +4,16 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Event;
+use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
     public function index()
     {
-        return Event::all();
+        $events = Event::with('location')->get();
+        return response()->json($events);
     }
+
 
     public function store(Request $request)
     {
@@ -20,7 +23,6 @@ class EventController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date',
             'id_location' => 'required|exists:locations,id_location',
-            'id_user' => 'required|exists:users,id_user'
         ]);
 
         $event = Event::create([
@@ -29,7 +31,7 @@ class EventController extends Controller
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
             'id_location' => $request->id_location,
-            'id_user' => $request->id_user
+            'id_user' => Auth::id(),
         ]);
 
         return response()->json($event, 201);
@@ -76,7 +78,6 @@ class EventController extends Controller
 
         return response()->json($event, 200);
     }
-
 
     public function destroy($id)
     {

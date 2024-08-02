@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('locations', function (Blueprint $table) {
             $table->id('id_location');
-            $table->string('location_name', 50);
+            $table->string('location_name', 255);
             $table->text('location_description');
             $table->string('location_category', 50);
             $table->string('latitude', 50);

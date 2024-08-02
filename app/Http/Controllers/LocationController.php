@@ -15,9 +15,9 @@ class LocationController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'location_name' => 'required|string|max:50',
+            'location_name' => 'required|string|max:255',
             'location_description' => 'required|string',
-            'location_category' => 'required|string|max:50',
+            'location_category' => 'string|max:50|nullable',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric'
         ]);
@@ -25,7 +25,7 @@ class LocationController extends Controller
         $location = Location::create([
             'location_name' => $request->location_name,
             'location_description' => $request->location_description,
-            'location_category' => $request->location_category,
+            'location_category' => $request->location_category ?? 'General',
             'latitude' => $request->latitude,
             'longitude' => $request->longitude
         ]);
@@ -41,9 +41,9 @@ class LocationController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'location_name' => 'string|max:50',
+            'location_name' => 'string|max:255',
             'location_description' => 'string',
-            'location_category' => 'string|max:50',
+            'location_category' => 'string|max:50|nullable',
             'latitude' => 'numeric',
             'longitude' => 'numeric'
         ]);
@@ -57,7 +57,7 @@ class LocationController extends Controller
             $location->location_description = $request->location_description;
         }
         if ($request->has('location_category')) {
-            $location->location_category = $request->location_category;
+            $location->location_category = $request->location_category ?? 'General';
         }
         if ($request->has('latitude')) {
             $location->latitude = $request->latitude;
