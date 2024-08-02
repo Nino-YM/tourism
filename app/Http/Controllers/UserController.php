@@ -25,7 +25,7 @@ class UserController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'id_role' => 2, // Default role id for regular users
+            'id_role' => 2,
         ]);
 
         return response()->json($user, 201);

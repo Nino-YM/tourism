@@ -13,7 +13,10 @@ use App\Http\Controllers\LocationController;
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
-
+Route::get('articles', [ArticleController::class, 'index']);
+Route::get('articles/{id}', [ArticleController::class, 'show']);
+Route::get('events', [EventController::class, 'index']);
+Route::get('events/{id}', [EventController::class, 'show']);
 // User Routes
 Route::middleware('auth:api')->group(function () {
     Route::get('users', [UserController::class, 'index']);
@@ -22,15 +25,13 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('users/{id}', [UserController::class, 'destroy']);
 
     // Article Routes
-    Route::get('articles', [ArticleController::class, 'index']);
-    Route::get('articles/{id}', [ArticleController::class, 'show']);
+
     Route::post('articles', [ArticleController::class, 'store']);
     Route::put('articles/{id}', [ArticleController::class, 'update']);
     Route::delete('articles/{id}', [ArticleController::class, 'destroy']);
 
     // Event Routes
-    Route::get('events', [EventController::class, 'index']);
-    Route::get('events/{id}', [EventController::class, 'show']);
+
     Route::post('events', [EventController::class, 'store']);
     Route::put('events/{id}', [EventController::class, 'update']);
     Route::delete('events/{id}', [EventController::class, 'destroy']);
