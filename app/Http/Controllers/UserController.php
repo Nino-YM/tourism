@@ -19,14 +19,13 @@ class UserController extends Controller
             'username' => 'required|string|max:50',
             'email' => 'required|string|email|max:50|unique:users',
             'password' => 'required|string|min:6',
-            'id_role' => 'required|exists:roles,id_role'
         ]);
 
         $user = User::create([
             'username' => $request->username,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'id_role' => $request->id_role
+            'id_role' => 2,
         ]);
 
         return response()->json($user, 201);
