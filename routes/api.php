@@ -17,6 +17,9 @@ Route::get('articles', [ArticleController::class, 'index']);
 Route::get('articles/{id}', [ArticleController::class, 'show']);
 Route::get('events', [EventController::class, 'index']);
 Route::get('events/{id}', [EventController::class, 'show']);
+Route::get('reviews', [ReviewController::class, 'index']);
+Route::get('reviews/{id}', [ReviewController::class, 'show']);
+
 // User Routes
 Route::middleware('auth:api')->group(function () {
     Route::get('users', [UserController::class, 'index']);
@@ -44,8 +47,7 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('locations/{id}', [LocationController::class, 'destroy']);
 
     // Review Routes
-    Route::get('reviews', [ReviewController::class, 'index']);
-    Route::get('reviews/{id}', [ReviewController::class, 'show']);
+
     Route::post('reviews', [ReviewController::class, 'store']);
     Route::put('reviews/{id}', [ReviewController::class, 'update']);
     Route::delete('reviews/{id}', [ReviewController::class, 'destroy']);
